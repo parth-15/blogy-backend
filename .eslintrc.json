@@ -11,10 +11,13 @@
       ],
       "no-unused-vars": "warn",
       "no-console": "off",
+      "no-underscore-dangle": "warn",
+      "no-param-reassign": "warn",
       "func-names": "off",
       "no-process-exit": "off",
       "object-shorthand": "off",
-      "class-methods-use-this": "off"
+      "class-methods-use-this": "off",
+      "prefer-destructuring": "off"
     },
     "overrides": [
       {
@@ -26,6 +29,17 @@
         ],
         "env": {
           "jest": true
+        }
+      },{
+        "files": [
+          "**/*.spec.js",
+          "**/*.spec.jsx",
+          "**/*.test.js",
+          "**/*.test.jsx"
+        ],
+        "rules": {
+            "node/no-unpublished-require": 0,
+            "node/no-missing-require": 0
         }
       }
     ]
