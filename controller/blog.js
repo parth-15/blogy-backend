@@ -1,3 +1,4 @@
+const blogRouter = require('express').Router();
 const Blog = require('../model/blog');
 
 const getAllBlogs = async (request, response) => {
@@ -14,15 +15,13 @@ const getOneBlog = async (request, response) => {
 const postOneBlog = async (request, response) => {
   const blog = new Blog(request.body);
   console.log(request.body);
-  // TODO: Refactor this into middleware
-  if (!blog.title || !blog.url) {
+  try {
+    const result = await blog.save();
+    return response.status(201).json(result);
+  } catch (e) {
+    console.log(e);
     return response.status(400).send();
   }
-  if (!blog.likes) {
-    blog.likes = 0;
-  }
-  const result = await blog.save();
-  return response.status(201).json(result);
 };
 
 const updateOneBlog = async (request, response) => {
@@ -42,10 +41,10 @@ const deleteBlogById = async (request, response) => {
   }
 };
 
-module.exports = {
-  getAllBlogs,
-  getOneBlog,
-  postOneBlog,
-  updateOneBlog,
-  deleteBlogById,
-};
+blogRouter.get('/', getAllBlogs);
+blogRouter.get('/:id', getOneBlog);
+blogRouter.post('/', postOneBlog);
+blogRouter.put('/:id', updateOneBlog);
+blogRouter.delete('/:id', deleteBlogById);
+
+module.exports = blogRouter;

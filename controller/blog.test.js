@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const supertest = require('supertest');
-const app = require('./app');
-const Blog = require('./model/blog');
-const { MONGODB_URI } = require('./utils/config');
+const app = require('../app');
+const Blog = require('../model/blog');
+const { MONGODB_URI } = require('../utils/config');
 
 const api = supertest(app);
 
@@ -128,7 +128,6 @@ test('request errors out if title and url is not present', async () => {
     author: 'Will Sentance',
     likes: 13,
   };
-
   await api.post('/api/blogs').send(newBlogWithoutTitleAndURL).expect(400);
 });
 
