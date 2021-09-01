@@ -1,8 +1,5 @@
 const blogRouter = require('express').Router();
-const jwt = require('jsonwebtoken');
 const Blog = require('../model/blog');
-const User = require('../model/user');
-const { userExtractorFromToken } = require('../utils/middleware');
 
 const getAllBlogs = async (request, response) => {
   const blogs = await Blog.find({}).populate('user');
@@ -44,7 +41,9 @@ const deleteBlogById = async (request, response) => {
   const blogToBeDeleted = await Blog.findById(id);
   if (blogToBeDeleted.user.toString() === user.id.toString()) {
     const result = await Blog.findByIdAndDelete(id);
-    return response.status(200).json(result).send();
+    user.blogs.splice(user.blogs.indexOf(blogToBeDeleted.id), 1);
+    await user.save();
+    return response.status(204).json(result).send();
   }
   return response
     .status(401)
@@ -53,7 +52,7 @@ const deleteBlogById = async (request, response) => {
 
 const deleteAllBlogs = async (request, response) => {
   const deletedCount = await Blog.deleteMany({});
-  response.status(200).json(deletedCount);
+  response.status(204).json(deletedCount);
 };
 
 blogRouter.get('/', getAllBlogs);
