@@ -11,7 +11,7 @@
       ],
       "no-unused-vars": "warn",
       "no-console": "off",
-      "no-underscore-dangle": "warn",
+      "no-underscore-dangle": "off",
       "no-param-reassign": "warn",
       "func-names": "off",
       "no-process-exit": "off",
