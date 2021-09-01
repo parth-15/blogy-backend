@@ -9,19 +9,14 @@ const getAllBlogs = async (request, response) => {
 const getOneBlog = async (request, response) => {
   const id = request.params.id;
   const blog = await Blog.findById(id);
-  response.status(200).json(blog);
+  return response.status(200).json(blog);
 };
 
 const postOneBlog = async (request, response) => {
   const blog = new Blog(request.body);
   console.log(request.body);
-  try {
-    const result = await blog.save();
-    return response.status(201).json(result);
-  } catch (e) {
-    console.log(e);
-    return response.status(400).send();
-  }
+  const result = await blog.save();
+  response.status(201).json(result);
 };
 
 const updateOneBlog = async (request, response) => {
@@ -34,11 +29,7 @@ const updateOneBlog = async (request, response) => {
 const deleteBlogById = async (request, response) => {
   const id = request.params.id;
   const result = await Blog.findByIdAndDelete(id);
-  if (result) {
-    response.status(200).json(result).send();
-  } else {
-    response.status(404).send();
-  }
+  return response.status(200).json(result).send();
 };
 
 blogRouter.get('/', getAllBlogs);

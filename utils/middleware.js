@@ -8,6 +8,11 @@ const requestLogger = (request, response, next) => {
   next();
 };
 
+const unknownEndpoint = (request, response) => {
+  console.log('I am here');
+  response.status(404).send({ error: 'unknown endpoint' });
+};
+
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message);
   if (error.name === 'CastError') {
@@ -19,4 +24,4 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
-module.exports = { requestLogger, errorHandler };
+module.exports = { requestLogger, unknownEndpoint, errorHandler };
