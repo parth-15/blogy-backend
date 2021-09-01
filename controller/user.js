@@ -4,12 +4,13 @@ const User = require('../model/user');
 
 const getAllUsers = async (request, response) => {
   const users = await User.find({}).populate('blogs');
+  console.log(users);
   response.status(200).json(users);
 };
 
 const getOneUser = async (request, response) => {
   const id = request.params.id;
-  const user = await User.findById(id);
+  const user = await User.findById(id).populate('blogs');
   response.status(200).json(user);
 };
 

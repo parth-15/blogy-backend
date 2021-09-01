@@ -1,6 +1,8 @@
 const blogRouter = require('express').Router();
+const jwt = require('jsonwebtoken');
 const Blog = require('../model/blog');
 const User = require('../model/user');
+const { userExtractorFromToken } = require('../utils/middleware');
 
 const getAllBlogs = async (request, response) => {
   const blogs = await Blog.find({}).populate('user');
@@ -15,17 +17,15 @@ const getOneBlog = async (request, response) => {
 
 const postOneBlog = async (request, response) => {
   const body = request.body;
-  const userId = body.user;
-  const user = await User.findById(userId);
+  const user = request.user;
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: userId,
+    user: user.id,
   });
   const savedBlog = await blog.save();
-  console.log(user);
   user.blogs = user.blogs.concat(savedBlog._id);
   await user.save();
   response.status(201).json(savedBlog);
@@ -40,8 +40,15 @@ const updateOneBlog = async (request, response) => {
 
 const deleteBlogById = async (request, response) => {
   const id = request.params.id;
-  const result = await Blog.findByIdAndDelete(id);
-  return response.status(200).json(result).send();
+  const user = request.user;
+  const blogToBeDeleted = await Blog.findById(id);
+  if (blogToBeDeleted.user.toString() === user.id.toString()) {
+    const result = await Blog.findByIdAndDelete(id);
+    return response.status(200).json(result).send();
+  }
+  return response
+    .status(401)
+    .json({ error: 'user not authorised to delete the blog' });
 };
 
 const deleteAllBlogs = async (request, response) => {
