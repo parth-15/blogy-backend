@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(requestLogger);
 app.use(getTokenFromRequest);
 
-app.use('/api/blogs', userExtractorFromToken, blogRouter);
+app.use('/api/blogs', blogRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
 

@@ -1,5 +1,9 @@
 const blogRouter = require('express').Router();
+const ObjectId = require('mongoose').Types.ObjectId;
 const Blog = require('../model/blog');
+const User = require('../model/user');
+
+const { userExtractorFromToken } = require('../utils/middleware');
 
 const getAllBlogs = async (request, response) => {
   const blogs = await Blog.find({}).populate('user');
@@ -20,7 +24,7 @@ const postOneBlog = async (request, response) => {
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: user.id,
+    user: user._id,
   });
   const savedBlog = await blog.save();
   user.blogs = user.blogs.concat(savedBlog._id);
@@ -31,8 +35,13 @@ const postOneBlog = async (request, response) => {
 const updateOneBlog = async (request, response) => {
   const newBlog = request.body;
   const id = request.params.id;
-  const updatedNote = await Blog.findByIdAndUpdate(id, newBlog, { new: true });
-  response.status(200).json(updatedNote);
+  const updatedBlog = await Blog.findByIdAndUpdate(
+    id,
+    { likes: newBlog.likes },
+    { new: true }
+  );
+
+  response.status(200).json(updatedBlog);
 };
 
 const deleteBlogById = async (request, response) => {
@@ -56,8 +65,8 @@ const deleteAllBlogs = async (request, response) => {
 };
 
 blogRouter.get('/', getAllBlogs);
-blogRouter.get('/:id', getOneBlog);
-blogRouter.post('/', postOneBlog);
+blogRouter.get('/:id', userExtractorFromToken, getOneBlog);
+blogRouter.post('/', userExtractorFromToken, postOneBlog);
 blogRouter.put('/:id', updateOneBlog);
 blogRouter.delete('/__deleteAll__', deleteAllBlogs);
 blogRouter.delete('/:id', deleteBlogById);
